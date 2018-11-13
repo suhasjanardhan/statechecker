@@ -8,6 +8,7 @@
     "category":[
         "Visibility and Monitoring"
     ],
+    "clustermanager": "kron",
     "contact":{
         "contact-email":"aciappcenter-support@external.cisco.com ",
         "contact-phone":"1-800-553-2447",
@@ -22,6 +23,6 @@
     "shortdescr":"Create and compare snapshots of switch state for interesting objects across all switches in the fabric",
     "vendor":"Cisco",
     "vendordomain":"Cisco",
-    "version":"1.1"
+    "version":"1.2"
 }
 

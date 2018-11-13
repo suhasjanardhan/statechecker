@@ -67,7 +67,11 @@ def apic_app_init(args):
 
     # set hostname to gateway of docker containiner if not provided
     hostname = args.hostname
-    if hostname is None: hostname = get_gateway()
+    if hostname is None:
+        if app.config.get("HOSTED_PLATFORM","") == "APIC":
+            hostname = "https://api.service.apic.local"
+        else:
+            hostname = get_gateway()
     if hostname is None:
         logger.error("failed to determine gateway/hostname for app")
         return False

@@ -36,7 +36,6 @@ def create_app(config_filename="config.py"):
     from .models.aci.compare import (Compare, CompareResults)
     from .models.aci.definitions import Definitions
     from .models.aci.fabric import Fabric
-    from .models.aci.cchecker_rest import ConsistencyChecker
     from .models.aci.managed_objects import ManagedObjects
     from .models.aci.snapshots import Snapshots
     from .models.app_status import AppStatus

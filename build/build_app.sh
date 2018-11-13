@@ -127,6 +127,7 @@ function build_app() {
     rm -rf $TMP_DIR/$APP_ID.build
     mkdir -p $TMP_DIR/$APP_ID/UIAssets
     mkdir -p $TMP_DIR/$APP_ID/Service
+    mkdir -p $TMP_DIR/$APP_ID/ClusterMgrConfig
     mkdir -p $TMP_DIR/$APP_ID/Image
     mkdir -p $TMP_DIR/$APP_ID/Legal
     mkdir -p $TMP_DIR/$APP_ID/Media/Snapshots
@@ -140,6 +141,8 @@ function build_app() {
     # include app.json in Service directory for config.py to pick up required variables
     cp -p ./app.json $TMP_DIR/$APP_ID/Service/
     cp -p ./version.txt $TMP_DIR/$APP_ID/Service/
+    # to support new app-infra, ensure cluster config is present
+    cp -p ./ClusterMgrConfig/* $TMP_DIR/$APP_ID/ClusterMgrConfig
 
     # create media and legal files
     # (note, snapshots are required in order for intro_video to be displayed on appcenter
@@ -205,11 +208,11 @@ function build_app() {
 
     # execute packager
     log "packaging application"
-    tar -zxf ./build/app_package/cisco_aci_app_tools-1.1_min.tar.gz -C $TMP_DIR/$APP_ID.build/ 
+    tar -zxf ./build/app_package/cisco_aci_app_tools-$app_pack.tar.gz -C $TMP_DIR/$APP_ID.build/ 
     if [ "$private_key" ] ; then
-        python $TMP_DIR/$APP_ID.build/cisco_aci_app_tools-1.1_min/tools/aci_app_packager.py -f $TMP_DIR/$APP_ID -p $private_key
+        python $TMP_DIR/$APP_ID.build/cisco_aci_app_tools-$app_pack/tools/aci_app_packager.py -f $TMP_DIR/$APP_ID -p $private_key
     else
-        python $TMP_DIR/$APP_ID.build/cisco_aci_app_tools-1.1_min/tools/aci_app_packager.py -f $TMP_DIR/$APP_ID
+        python $TMP_DIR/$APP_ID.build/cisco_aci_app_tools-$app_pack/tools/aci_app_packager.py -f $TMP_DIR/$APP_ID
     fi
 
     # cleanup

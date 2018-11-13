@@ -6,6 +6,7 @@ BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../"
 cd $BASE_DIR
 
 relax_build_checks="0"
+app_pack="1.2_min"
 
 # these variables are set from app.json if found. Use app.json as single
 # source of truth.
@@ -141,7 +142,7 @@ function check_packager_dependencies() {
         echo "" >&2
         echo "Missing required python dependency 'cisco-aci-app-tools', aborting build" >&2
         echo "You can install via:" >&2
-        echo "  pip install build/app_package/cisco_aci_app_tools-1.1_min.tar.gz" >&2
+        echo "  pip install build/app_package/cisco_aci_app_tools-$app_pack.tar.gz" >&2
         echo "" >&2
         exit 1
     fi

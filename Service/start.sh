@@ -226,6 +226,11 @@ function create_app_config_file() {
         echo "LOG_ROTATE=0" >> $config_file
         echo "ACI_APP_MODE=1" >> $config_file
         echo "LOGIN_ENABLED=0" >> $config_file
+        if [ "$HOSTED_PLATFORM" == "APIC" ] ; then
+            log "updating $config_file with app-infra settings"
+            echo "HOSTED_PLATFORM=\"$HOSTED_PLATFORM\"" >> $config_file
+            echo "PROXY_URL=\"https://localhost:$WEB_PORT\"" >> $config_file
+        fi
         # update iv and ev against seed
         echo "" > $PRIVATE_CONFIG
         if [ -s "$CRED_DIR/plugin.key" ] && [ -s "$CRED_DIR/plugin.crt" ] ; then
@@ -238,7 +243,6 @@ function create_app_config_file() {
         fi
     fi
     chmod 755 $config_file
-
 }
 
 # execute db init scripts
@@ -259,7 +263,31 @@ function init_db() {
         set_status "error: failed to initialize db"
         exit_script
     fi
+}
 
+# run apache on custom port
+function update_apache() {
+    set_status "updating apache config"
+    if [ "$WEB_PORT" == "" ] ; then
+        log "error: WEB_PORT env not set"
+        return 1
+    else
+        # update listening ports
+        ports="/etc/apache2/ports.conf"
+        echo "" > $ports
+        echo "<IfModule ssl_module>" >> $ports
+        echo "  Listen $WEB_PORT" >> $ports
+        echo "</IfModule>" >> $ports
+        echo "<IfModule mod_gnutls.c>" >> $ports
+        echo "  Listen $WEB_PORT" >> $ports
+        echo "</IfModule>" >> $ports
+        # update disable 000-default to prevent locked ports, and restart ssl-default
+        ssl_conf="/etc/apache2/sites-available/default-ssl.conf"
+        sed -i -E "s/_default_:[0-9]+/_default_:$WEB_PORT/" $ssl_conf
+        /usr/sbin/a2dissite 000-default
+        /usr/sbin/a2dissite default-ssl
+        /usr/sbin/a2ensite default-ssl
+    fi
 }
 
 # main container startup
@@ -278,6 +306,10 @@ function main(){
     # setup required directories with proper write access and custom app config
     setup_directories
     create_app_config_file
+    # if HOSTED_PLATFORM and WEB_PORT are set then reconfigure apache with env
+    if [ "$HOSTED_PLATFORM" == "APIC" ] && [ "$WEB_PORT" != "" ] ; then
+        update_apache
+    fi
     start_all_services
     init_db
 
@@ -318,7 +350,6 @@ function main(){
     set_status "error: bash sleep killed"
     exit_script
 }
-
 
 # execute main 
 main

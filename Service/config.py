@@ -120,3 +120,6 @@ TMP_DIR = os.environ.get("TMP_DIR", "/tmp/")
 DATA_DIR = os.environ.get("DATA_DIR", "/home/app/data/snapshots")
 MAX_POOL_SIZE = int(os.environ.get("MAX_POOL_SIZE", cpu_count()))
 
+# set to APIC in APP_MODE=1 and executing on app-infra supported apic (4.0+)
+HOSTED_PLATFORM = os.environ.get("HOSTED_PLATFORM","") 
+
